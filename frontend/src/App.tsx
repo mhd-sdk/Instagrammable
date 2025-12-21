@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -10,6 +10,7 @@ function App() {
   const [file, setFile] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,9 +42,10 @@ function App() {
       setPrompt('')
       setFile(null)
       
-      // Reset file input
-      const fileInput = document.getElementById('image') as HTMLInputElement
-      if (fileInput) fileInput.value = ''
+      // Reset file input using ref
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
     } catch (error) {
       setMessage('Error: ' + (error instanceof Error ? error.message : 'Upload failed'))
     } finally {
@@ -76,6 +78,7 @@ function App() {
               <Label htmlFor="image">Image</Label>
               <Input
                 id="image"
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 onChange={(e) => setFile(e.target.files?.[0] || null)}
