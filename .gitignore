@@ -38,6 +38,7 @@ dist/
 
 # Uploads
 backend/uploads/
+backend/generated/
 
 # Compiled binaries
 backend/instagrammable
