@@ -1,0 +1,230 @@
+# Docker Compose configuration for automaker-starter-kit
+# Provides complete development environment with all services
+#
+# Usage:
+#   Development: docker compose up -d
+#   Full stack:  docker compose --profile full up -d
+#   Production:  docker compose --profile production up -d
+#
+# Services:
+#   - db: PostgreSQL database (always running)
+#   - redis: Redis cache (always running)
+#   - app: Main application (full profile)
+#   - mailhog: Email testing (full profile)
+#   - adminer: Database UI (full profile)
+
+services:
+  # ============================================
+  # PostgreSQL Database
+  # ============================================
+  db:
+    image: postgres:17-alpine
+    container_name: automaker-starter-kit-db
+    restart: unless-stopped
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-automaker}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init:/docker-entrypoint-initdb.d:ro
+      - ./pg_hba.conf:/etc/postgresql/pg_hba.conf:ro
+    command: >
+      postgres
+      -c ssl=off
+      -c listen_addresses='*'
+      -c hba_file=/etc/postgresql/pg_hba.conf
+      -c log_statement=all
+      -c log_destination=stderr
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-automaker}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - automaker-network
+
+  # ============================================
+  # Redis Cache (for sessions, rate limiting, etc.)
+  # ============================================
+  redis:
+    image: redis:7-alpine
+    container_name: automaker-starter-kit-redis
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - automaker-network
+
+  # ============================================
+  # Main Application (Development)
+  # ============================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: automaker-starter-kit-app
+    restart: unless-stopped
+    profiles:
+      - full
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: development
+      # Database connection using service name
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-automaker}
+      # Redis connection
+      REDIS_URL: redis://redis:6379
+      # App configuration
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET:-dev-secret-change-in-production}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      # Vite public env vars
+      VITE_BETTER_AUTH_URL: ${VITE_BETTER_AUTH_URL:-http://localhost:3000}
+      VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY:-}
+      VITE_STRIPE_BASIC_PRICE_ID: ${VITE_STRIPE_BASIC_PRICE_ID:-}
+      VITE_STRIPE_PRO_PRICE_ID: ${VITE_STRIPE_PRO_PRICE_ID:-}
+      VITE_R2_ENDPOINT: ${VITE_R2_ENDPOINT:-}
+      VITE_R2_BUCKET: ${VITE_R2_BUCKET:-}
+    volumes:
+      # Mount source code for hot-reload
+      - .:/app
+      # Exclude node_modules from host (use container's modules)
+      - /app/node_modules
+      # Persist Vite cache
+      - vite_cache:/app/node_modules/.vite
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - automaker-network
+
+  # ============================================
+  # Application (Production Build)
+  # ============================================
+  app-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: automaker-starter-kit-app-prod
+    restart: unless-stopped
+    profiles:
+      - production
+    ports:
+      - "${APP_PORT:-3000}:3000"
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@db:5432/${POSTGRES_DB:-automaker}
+      REDIS_URL: redis://redis:6379
+      BETTER_AUTH_SECRET: ${BETTER_AUTH_SECRET}
+      STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
+      STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
+      R2_ACCESS_KEY_ID: ${R2_ACCESS_KEY_ID:-}
+      R2_SECRET_ACCESS_KEY: ${R2_SECRET_ACCESS_KEY:-}
+      VITE_BETTER_AUTH_URL: ${VITE_BETTER_AUTH_URL:-http://localhost:3000}
+      VITE_STRIPE_PUBLISHABLE_KEY: ${VITE_STRIPE_PUBLISHABLE_KEY:-}
+      VITE_STRIPE_BASIC_PRICE_ID: ${VITE_STRIPE_BASIC_PRICE_ID:-}
+      VITE_STRIPE_PRO_PRICE_ID: ${VITE_STRIPE_PRO_PRICE_ID:-}
+      VITE_R2_ENDPOINT: ${VITE_R2_ENDPOINT:-}
+      VITE_R2_BUCKET: ${VITE_R2_BUCKET:-}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - automaker-network
+
+  # ============================================
+  # MailHog - Email Testing (Development)
+  # ============================================
+  mailhog:
+    image: mailhog/mailhog:latest
+    container_name: automaker-starter-kit-mailhog
+    restart: unless-stopped
+    profiles:
+      - full
+    ports:
+      - "${MAILHOG_SMTP_PORT:-1025}:1025"  # SMTP server
+      - "${MAILHOG_UI_PORT:-8025}:8025"    # Web UI
+    networks:
+      - automaker-network
+
+  # ============================================
+  # Adminer - Database Management UI
+  # ============================================
+  adminer:
+    image: adminer:latest
+    container_name: automaker-starter-kit-adminer
+    restart: unless-stopped
+    profiles:
+      - full
+    ports:
+      - "${ADMINER_PORT:-8080}:8080"
+    environment:
+      ADMINER_DEFAULT_SERVER: db
+      ADMINER_DESIGN: nette
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - automaker-network
+
+  # ============================================
+  # Redis Commander - Redis Management UI
+  # ============================================
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    container_name: automaker-starter-kit-redis-commander
+    restart: unless-stopped
+    profiles:
+      - full
+    ports:
+      - "${REDIS_COMMANDER_PORT:-8081}:8081"
+    environment:
+      REDIS_HOSTS: local:redis:6379
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - automaker-network
+
+# ============================================
+# Networks
+# ============================================
+networks:
+  automaker-network:
+    driver: bridge
+    name: automaker-network
+
+# ============================================
+# Volumes
+# ============================================
+volumes:
+  postgres_data:
+    name: automaker-postgres-data
+  redis_data:
+    name: automaker-redis-data
+  vite_cache:
+    name: automaker-vite-cache

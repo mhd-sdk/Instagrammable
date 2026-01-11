@@ -1,0 +1,19 @@
+{
+  "category": "Uncategorized",
+  "description": "Post on instagram using this lib : https://github.com/dilame/instagram-private-api?tab=readme-ov-file\n\nwhen the user click on the button Use Edited Image & Create Post, you should upload the image and create an instagram post on the logged in profile. \n\n",
+  "title": "",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "branchName": "main",
+  "priority": 2,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "titleGenerating": false,
+  "status": "backlog",
+  "id": "feature-1768048481766-5in3j7xql"
+}

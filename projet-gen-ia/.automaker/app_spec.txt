@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project_specification>
+  <project_name>ShopAI - AI-Powered Product Photo Enhancement for Instagram</project_name>
+
+  <overview>
+    ShopAI is a sophisticated web application designed specifically for small business owners and e-commerce entrepreneurs to enhance their product photographs using Google Gemini&apos;s AI vision capabilities. The platform enables users to upload their shop/product photos and transform them with personalized AI-generated variations tailored to their brand identity. Each business creates a &quot;prompt builder&quot; that captures their unique brand personality, including their logo, color palette, artistic direction, and custom instructions. When users upload a product photo, Gemini AI generates multiple high-quality variations, allowing them to select their favorite. The application includes Instagram integration with smart post caption suggestions, making it seamless to share embellished product photos directly to their social media presence. Built on a modern full-stack architecture with TypeScript, React, and PostgreSQL, ShopAI combines secure authentication, subscription-based monetization through Stripe, and scalable cloud storage via AWS S3/R2 presigned URLs.
+  </overview>
+
+  <technology_stack>
+    <technology>React 19.2</technology>
+    <technology>TypeScript 5.9</technology>
+    <technology>TanStack Start (Full-stack React)</technology>
+    <technology>TanStack Router 1.136+</technology>
+    <technology>TanStack Query (React Query) 5.90+</technology>
+    <technology>Tailwind CSS 4.1</technology>
+    <technology>Radix UI</technology>
+    <technology>Drizzle ORM 0.44</technology>
+    <technology>PostgreSQL 12+</technology>
+    <technology>Better Auth 1.3</technology>
+    <technology>Stripe API 20.0</technology>
+    <technology>AWS SDK S3 3.936</technology>
+    <technology>AWS S3 Request Presigner</technology>
+    <technology>Google Gemini API</technology>
+    <technology>Vite 7.2</technology>
+    <technology>Nitro (Backend)</technology>
+    <technology>React Hook Form 7.66</technology>
+    <technology>Zod 4.1</technology>
+    <technology>React Dropzone 14.3</technology>
+    <technology>Sonner (Toast Notifications)</technology>
+    <technology>Lucide Icons</technology>
+    <technology>NProgress</technology>
+    <technology>Tailwind CSS Animate</technology>
+    <technology>Docker (PostgreSQL container)</technology>
+    <technology>Drizzle Kit 0.31</technology>
+  </technology_stack>
+
+  <core_capabilities>
+    <capability>Secure Email/Password and OAuth (Google) Authentication with Better Auth</capability>
+    <capability>Multi-tier Subscription Plans (Free, Basic, Pro) with Stripe integration</capability>
+    <capability>Prompt Builder with modular design (selectable building blocks: logo, colors, artistic direction, custom prompts)</capability>
+    <capability>AI-Powered Image Enhancement using Google Gemini Vision API</capability>
+    <capability>Multiple Image Variation Generation with user selection interface</capability>
+    <capability>Product Image Upload with drag-and-drop and S3/R2 presigned URL support</capability>
+    <capability>Instagram Integration with Social Media Post Preview</capability>
+    <capability>AI-Generated Instagram Caption/Description Suggestions</capability>
+    <capability>User Profile Management with customizable business information</capability>
+    <capability>File Storage with secure presigned URLs and cloud-based asset management</capability>
+    <capability>Real-time Notifications using Sonner toasts</capability>
+    <capability>Responsive UI with Tailwind CSS and Radix UI components</capability>
+    <capability>Type-safe Database Layer with Drizzle ORM</capability>
+    <capability>Server Functions for secure API communication using TanStack Start</capability>
+    <capability>Advanced Image Gallery and Media Management</capability>
+    <capability>Admin Capabilities for system management</capability>
+    <capability>Email Verification and Session Management</capability>
+  </core_capabilities>
+
+  <implemented_features>
+    <feature>
+      <name>Secure Authentication System</name>
+      <description>Complete authentication system using Better Auth with email/password login and Google OAuth integration. Supports user registration, email verification, session management, and password reset flows.</description>
+      <file_locations>
+        <location>/src/utils/auth.ts</location>
+        <location>/src/lib/auth-client.ts</location>
+        <location>/src/routes/sign-in.tsx</location>
+        <location>/src/routes/sign-up.tsx</location>
+        <location>/src/routes/api/auth/$.ts</location>
+        <location>/src/fn/middleware.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>User Management and Profiles</name>
+      <description>User account creation, profile management with bio/information updates, avatar upload support, and user data persistence in PostgreSQL.</description>
+      <file_locations>
+        <location>/src/db/schema.ts</location>
+        <location>/src/data-access/users.ts</location>
+        <location>/src/data-access/profiles.ts</location>
+        <location>/src/fn/users.ts</location>
+        <location>/src/hooks/useProfile.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Subscription and Billing</name>
+      <description>Stripe-powered subscription management supporting Free, Basic, and Pro plans. Includes webhook handling for subscription events, plan enforcement, and customer portal integration.</description>
+      <file_locations>
+        <location>/src/routes/api/stripe/webhook.ts</location>
+        <location>/src/lib/stripe.ts</location>
+        <location>/src/lib/plans.ts</location>
+        <location>/src/fn/subscriptions.ts</location>
+        <location>/src/hooks/useSubscription.ts</location>
+        <location>/src/db/schema.ts (subscription fields)</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>File Upload and Storage System</name>
+      <description>Presigned URL-based upload system supporting both image and video uploads to AWS S3/R2. Implements secure client-side uploads without exposing API keys.</description>
+      <file_locations>
+        <location>/src/utils/storage/index.ts</location>
+        <location>/src/utils/storage/r2.ts</location>
+        <location>/src/utils/storage/helpers.ts</location>
+        <location>/src/utils/storage/media-helpers.ts</location>
+        <location>/src/fn/storage.ts</location>
+        <location>/src/hooks/useStorage.ts</location>
+        <location>/src/utils/attachments.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Responsive Dashboard</name>
+      <description>User dashboard providing access to all application features with responsive design supporting mobile, tablet, and desktop views.</description>
+      <file_locations>
+        <location>/src/routes/dashboard/index.tsx</location>
+        <location>/src/routes/dashboard/settings.tsx</location>
+        <location>/src/routes/dashboard.tsx</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Database Schema and ORM</name>
+      <description>Type-safe database schema using Drizzle ORM with PostgreSQL. Includes tables for users, sessions, accounts, profiles, and subscription management with full type inference.</description>
+      <file_locations>
+        <location>/src/db/index.ts</location>
+        <location>/src/db/schema.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Component Library</name>
+      <description>Extensive Radix UI-based component library for consistent UI design including buttons, forms, dialogs, cards, inputs, selects, and other reusable elements.</description>
+      <file_locations>
+        <location>/src/components/ui/*</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Server Functions and API Layer</name>
+      <description>TanStack Start server functions for type-safe API communication with built-in authentication middleware and validation using Zod schemas.</description>
+      <file_locations>
+        <location>/src/fn/*</location>
+        <location>/src/routes/api/*</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Data Access Layer</name>
+      <description>Abstracted data access functions for all major entities using Drizzle ORM with query builders and type safety.</description>
+      <file_locations>
+        <location>/src/data-access/*</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Custom React Hooks</name>
+      <description>Custom hooks for data fetching using TanStack Query including user, profile, storage, and subscription queries with caching and revalidation.</description>
+      <file_locations>
+        <location>/src/hooks/*</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>React Query Integration</name>
+      <description>Server state management using TanStack Query with query definitions, prefetching, and real-time updates.</description>
+      <file_locations>
+        <location>/src/queries/*</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Theme and Dark Mode</name>
+      <description>Theme provider supporting light/dark mode with persisted user preferences.</description>
+      <file_locations>
+        <location>/src/components/theme-provider.tsx</location>
+        <location>/src/components/mode-toggle.tsx</location>
+        <location>/src/hooks/useTheme.ts</location>
+      </file_locations>
+    </feature>
+    <feature>
+      <name>Email and Authentication Guards</name>
+      <description>Middleware functions for route protection, authentication verification, and admin authorization checks.</description>
+      <file_locations>
+        <location>/src/fn/guards.ts</location>
+        <location>/src/fn/middleware.ts</location>
+      </file_locations>
+    </feature>
+  </implemented_features>
+
+  <additional_requirements>
+    <requirement>Node.js v18 or higher required</requirement>
+    <requirement>PostgreSQL 12+ for database (can be run via Docker)</requirement>
+    <requirement>npm or yarn package manager</requirement>
+    <requirement>Environment variables required: DATABASE_URL, BETTER_AUTH_SECRET, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, GEMINI_API_KEY (to be added)</requirement>
+    <requirement>AWS S3/Cloudflare R2 credentials for file storage</requirement>
+    <requirement>Stripe account for payment processing</requirement>
+    <requirement>Google OAuth credentials for authentication</requirement>
+    <requirement>Google Gemini API key for AI image enhancement features</requirement>
+    <requirement>Instagram API access (future integration)</requirement>
+    <requirement>SSL/HTTPS support required for production (OAuth requirement)</requirement>
+    <requirement>Minimum browser support: ES2020 compatible browsers</requirement>
+  </additional_requirements>
+
+  <development_guidelines>
+    <guideline>Follow TanStack Start server function patterns for all API communication with .middleware() and .handler() structure</guideline>
+    <guideline>Use Zod for input validation on all server functions - validate at the boundary</guideline>
+    <guideline>Implement proper error handling with consistent error responses using ~/utils/error.ts patterns</guideline>
+    <guideline>Use authenticatedMiddleware for protected routes - always check user context</guideline>
+    <guideline>Implement subscription plan checks before executing paid features using assertSubscriptionPlan</guideline>
+    <guideline>Use React Hook Form with Zod resolvers for all client-side forms</guideline>
+    <guideline>Apply Tailwind CSS utility classes for styling - avoid inline styles</guideline>
+    <guideline>Use Radix UI components from ~/components/ui/ for consistent design</guideline>
+    <guideline>Implement proper TypeScript types - avoid using &apos;any&apos; type</guideline>
+    <guideline>Use Drizzle ORM query builder instead of raw SQL - leverage type safety</guideline>
+    <guideline>Implement optimistic updates in React Query when appropriate for better UX</guideline>
+    <guideline>Use custom hooks from ~/hooks/ for data fetching and state management</guideline>
+    <guideline>Follow file naming conventions: PascalCase for components, camelCase for utilities/functions</guideline>
+    <guideline>Keep components focused and single-responsibility</guideline>
+    <guideline>Use environment variables via ~/config/publicEnv.ts and ~/config/privateEnv.ts</guideline>
+    <guideline>Implement proper loading and error states for async operations</guideline>
+    <guideline>Test authentication flows with both email/password and Google OAuth</guideline>
+    <guideline>Use presigned URLs for file uploads - never expose API keys to client</guideline>
+    <guideline>Implement proper session validation before processing sensitive operations</guideline>
+    <guideline>Follow existing code patterns for consistency and maintainability</guideline>
+  </development_guidelines>
+
+  <implementation_roadmap>
+    <phase>
+      <name>Phase 1: Prompt Builder Foundation</name>
+      <status>pending</status>
+      <description>Build the core prompt builder interface allowing users to create modular business profiles. Include components for uploading logos, selecting brand colors, writing custom artistic directions, and storing predefined templates. Implement database schema for storing prompt configurations per user.</description>
+    </phase>
+    <phase>
+      <name>Phase 2: Gemini AI Integration</name>
+      <status>pending</status>
+      <description>Integrate Google Gemini Vision API for image enhancement. Create server functions to process uploaded images with personalized prompts, handle multiple variation generation, implement error handling for API failures, and optimize for cost-effective API usage.</description>
+    </phase>
+    <phase>
+      <name>Phase 3: Image Processing and Gallery</name>
+      <status>pending</status>
+      <description>Build image upload workflow with drag-and-drop, implement multiple variation display gallery with comparison tools, add image selection and saving functionality, and integrate with storage system for persisting generated images.</description>
+    </phase>
+    <phase>
+      <name>Phase 4: Instagram Integration UI</name>
+      <status>pending</status>
+      <description>Create Instagram post preview page with selected image, implement AI-powered caption suggestion system using Gemini, add caption customization and editing interface, and build social media integration hooks for future direct posting.</description>
+    </phase>
+    <phase>
+      <name>Phase 5: Subscription Tier Integration</name>
+      <status>pending</status>
+      <description>Enforce feature limits based on subscription tiers (generations per month, image quality, variations count), add usage tracking and analytics, implement upgrade prompts when limits are reached, and integrate with existing Stripe subscription system.</description>
+    </phase>
+    <phase>
+      <name>Phase 6: Performance and Optimization</name>
+      <status>pending</status>
+      <description>Optimize image processing performance, implement caching for generated images, add batch processing for multiple images, optimize database queries, and implement proper error recovery and retry mechanisms.</description>
+    </phase>
+    <phase>
+      <name>Phase 7: Instagram Direct Posting</name>
+      <status>pending</status>
+      <description>Implement Instagram API integration for direct posting, handle OAuth flow for Instagram authentication, manage token refresh and error handling, and add scheduled posting capabilities.</description>
+    </phase>
+    <phase>
+      <name>Phase 8: Polish and Launch</name>
+      <status>pending</status>
+      <description>Comprehensive testing and QA, user documentation and onboarding, performance optimization and monitoring, security audit and hardening, and production deployment setup.</description>
+    </phase>
+  </implementation_roadmap>
+</project_specification>

@@ -1,0 +1,14 @@
+{
+  "id": "instagram-preview-ui",
+  "category": "UI",
+  "title": "Instagram Post Preview Component",
+  "description": "Create Instagram feed-style preview showing selected product image with customizable caption, hashtags, and visual formatting to simulate actual Instagram appearance.",
+  "status": "backlog",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [
+    "variation-selection"
+  ],
+  "createdAt": "2025-12-27T10:46:03.055Z",
+  "updatedAt": "2025-12-27T10:46:03.055Z"
+}

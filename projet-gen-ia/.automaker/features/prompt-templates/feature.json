@@ -1,0 +1,17 @@
+{
+  "id": "prompt-templates",
+  "category": "UI",
+  "title": "Prompt Template Library",
+  "description": "Create a library of predefined prompt templates for different industries and styles. Allow users to select templates and customize them for their brand.",
+  "status": "backlog",
+  "priority": 2,
+  "complexity": "simple",
+  "dependencies": [
+    "prompt-builder-ui",
+    "prompt-builder-storage"
+  ],
+  "createdAt": "2025-12-27T10:46:03.053Z",
+  "updatedAt": "2025-12-27T11:33:17.012Z",
+  "branchName": "main",
+  "startedAt": "2025-12-27T11:33:16.885Z"
+}

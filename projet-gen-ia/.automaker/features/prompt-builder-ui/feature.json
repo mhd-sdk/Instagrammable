@@ -1,0 +1,14 @@
+{
+  "id": "prompt-builder-ui",
+  "category": "UI",
+  "title": "Prompt Builder Interface",
+  "description": "Create the main prompt builder UI with modular sections for logo upload, color picker, artistic direction inputs, and custom instructions. This is the foundation for capturing brand identity.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2025-12-27T10:46:03.050Z",
+  "updatedAt": "2025-12-27T11:31:25.449Z",
+  "branchName": "main",
+  "startedAt": "2025-12-27T11:25:17.168Z"
+}

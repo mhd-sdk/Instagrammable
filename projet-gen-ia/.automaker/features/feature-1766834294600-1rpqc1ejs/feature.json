@@ -1,0 +1,22 @@
+{
+  "category": "Uncategorized",
+  "description": "Initialise le repo git",
+  "title": "Initialize Git repository",
+  "images": [],
+  "imagePaths": [],
+  "textFilePaths": [],
+  "skipTests": true,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "branchName": "main",
+  "priority": 1,
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "dependencies": [],
+  "titleGenerating": false,
+  "status": "verified",
+  "id": "feature-1766834294600-1rpqc1ejs",
+  "startedAt": "2025-12-27T11:18:20.783Z",
+  "updatedAt": "2025-12-27T11:19:22.396Z",
+  "justFinishedAt": "2025-12-27T11:19:22.396Z"
+}

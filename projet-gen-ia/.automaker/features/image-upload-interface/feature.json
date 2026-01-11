@@ -1,0 +1,14 @@
+{
+  "id": "image-upload-interface",
+  "category": "UI",
+  "title": "Product Image Upload Interface",
+  "description": "Build drag-and-drop image upload component with preview, file validation, and integration with presigned URL upload system. Include progress indicators and error handling.",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "moderate",
+  "dependencies": [],
+  "createdAt": "2025-12-27T10:46:03.053Z",
+  "updatedAt": "2025-12-27T11:35:27.673Z",
+  "branchName": "main",
+  "startedAt": "2025-12-27T11:23:11.111Z"
+}

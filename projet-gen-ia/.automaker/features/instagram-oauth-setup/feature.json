@@ -1,0 +1,23 @@
+{
+  "id": "instagram-oauth-setup",
+  "category": "API",
+  "title": "Instagram OAuth Authentication",
+  "description": "Implement Instagram OAuth flow to authenticate users and obtain tokens for future API access. Store tokens securely in database with refresh logic.\nmake this feature accessible in the profile page",
+  "status": "verified",
+  "priority": 1,
+  "complexity": "complex",
+  "dependencies": [
+    "caption-editor-ui"
+  ],
+  "createdAt": "2025-12-27T10:46:03.058Z",
+  "updatedAt": "2026-01-11T13:22:56.276Z",
+  "skipTests": false,
+  "model": "opus",
+  "thinkingLevel": "none",
+  "imagePaths": [],
+  "textFilePaths": [],
+  "branchName": "main",
+  "planningMode": "skip",
+  "requirePlanApproval": false,
+  "startedAt": "2026-01-11T13:15:25.077Z"
+}
