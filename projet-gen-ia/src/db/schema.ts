@@ -639,3 +639,52 @@ export type CreatePostData = typeof post.$inferInsert;
 export type UpdatePostData = Partial<
   Omit<CreatePostData, "id" | "userId" | "createdAt">
 >;
+
+// ============================================
+// Instagram Credentials Schema (for instagram-private-api)
+// ============================================
+
+// Instagram Credentials - Store user's Instagram login credentials for posting
+export const instagramCredentials = pgTable(
+  "instagram_credentials",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    username: text("username").notNull(),
+    password: text("password").notNull(), // Should be encrypted in production
+    sessionData: text("session_data"), // JSON stringified session state for persistence
+    lastLoginAt: timestamp("last_login_at"),
+    createdAt: timestamp("created_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+    updatedAt: timestamp("updated_at")
+      .$defaultFn(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("idx_instagram_credentials_user_id").on(table.userId),
+  ]
+);
+
+// Instagram Credentials Relations
+export const instagramCredentialsRelations = relations(
+  instagramCredentials,
+  ({ one }) => ({
+    user: one(user, {
+      fields: [instagramCredentials.userId],
+      references: [user.id],
+    }),
+  })
+);
+
+// ============================================
+// Instagram Credentials Type Exports
+// ============================================
+
+export type InstagramCredentials = typeof instagramCredentials.$inferSelect;
+export type CreateInstagramCredentialsData = typeof instagramCredentials.$inferInsert;
+export type UpdateInstagramCredentialsData = Partial<
+  Omit<CreateInstagramCredentialsData, "id" | "userId" | "createdAt">
+>;

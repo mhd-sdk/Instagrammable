@@ -4,8 +4,8 @@
   "sideEffects": false,
   "type": "module",
   "scripts": {
-    "dev": "[ ! -f .env ] && cp .env.example .env || true && docker compose up -d && until docker exec automaker-starter-kit-db pg_isready -U postgres > /dev/null 2>&1; do echo 'Waiting for postgres...'; sleep 1; done && npm run db:migrate && vite dev",
-    "dev:app": "vite dev",
+    "dev": "[ ! -f .env ] && cp .env.example .env || true && docker compose up -d && until docker exec automaker-starter-kit-db pg_isready -U postgres > /dev/null 2>&1; do echo 'Waiting for postgres...'; sleep 1; done && npm run db:migrate && dotenv -e .env -- vite dev",
+    "dev:app": "dotenv -e .env -- vite dev",
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",
     "db:generate": "dotenv -e .env -- drizzle-kit generate",
@@ -57,7 +57,8 @@
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^4.1.12"
+    "zod": "^4.1.12",
+    "instagram-private-api": "^1.46.1"
   },
   "devDependencies": {
     "@playwright/test": "^1.57.0",

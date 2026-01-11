@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Eye, FileText, ImagePlus, Loader2, RotateCcw, Send, X } from "lucide-react";
+import { Eye, FileText, ImagePlus, Instagram, Loader2, RotateCcw, Send, X } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -32,7 +32,9 @@ import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
 import { editProductImageFn } from "~/fn/image-edit";
 import { getUserPromptConfigurationsFn } from "~/fn/prompts";
+import { getInstagramConnectionFn, postToInstagramFn } from "~/fn/instagram";
 import { cn } from "~/lib/utils";
+import { publicEnv } from "~/config/publicEnv";
 import type { MediaUploadResult } from "~/utils/storage/media-helpers";
 import { defaultValues, newPostSchema, type NewPostFormData } from "./schema";
 
@@ -57,6 +59,25 @@ export function NewPostForm({
   const [editDescription, setEditDescription] = React.useState<string>("");
   const [appliedBrandElements, setAppliedBrandElements] = React.useState<any>(null);
   const [lightboxImage, setLightboxImage] = React.useState<string | null>(null);
+  const [instagramConnection, setInstagramConnection] = React.useState<{
+    connected: boolean;
+    username?: string;
+  } | null>(null);
+  const [isPostingToInstagram, setIsPostingToInstagram] = React.useState(false);
+
+  // Fetch Instagram connection status on mount
+  React.useEffect(() => {
+    const checkInstagramConnection = async () => {
+      try {
+        const status = await getInstagramConnectionFn();
+        setInstagramConnection(status);
+      } catch (error) {
+        console.error("Failed to check Instagram connection:", error);
+        setInstagramConnection({ connected: false });
+      }
+    };
+    checkInstagramConnection();
+  }, []);
 
   const form = useForm<NewPostFormData>({
     resolver: zodResolver(newPostSchema),
@@ -169,6 +190,7 @@ export function NewPostForm({
     }
 
     setIsGenerating(true);
+    setIsPostingToInstagram(true);
 
     try {
       // Convertir le data URL en Blob
@@ -199,6 +221,49 @@ export function NewPostForm({
       form.setValue("imageUrl", editedImagePath, { shouldValidate: true });
       setUploadedImage(editedImageData); // Afficher l'image éditée dans le form
 
+      // Post to Instagram if connected via OAuth
+      if (instagramConnection?.connected) {
+        try {
+          toast.loading("Posting to Instagram...", { id: "instagram-post" });
+
+          // Build the public URL for the uploaded image
+          // Instagram requires a publicly accessible URL (not localhost/base64)
+          const publicUrl = publicEnv.PUBLIC_URL || window.location.origin;
+          const publicImageUrl = `${publicUrl}/api/uploads/${encodeURIComponent(editedImagePath)}`;
+
+          console.log("[Instagram Post] Public image URL:", publicImageUrl);
+
+          // Build the caption from form data
+          const formData = form.getValues();
+          const caption = formData.title
+            ? `${formData.title}\n\n${formData.prompt || ""}`
+            : formData.prompt || "";
+
+          const result = await postToInstagramFn({
+            data: {
+              imageUrl: publicImageUrl, // Use the public URL, not base64
+              caption: caption.trim(),
+            }
+          });
+
+          toast.success("Posted to Instagram successfully!", {
+            id: "instagram-post",
+            description: `Media ID: ${result.mediaId}`,
+          });
+        } catch (instagramError: any) {
+          console.error("Failed to post to Instagram:", instagramError);
+          toast.error("Failed to post to Instagram", {
+            id: "instagram-post",
+            description: instagramError.message || "Please check your Instagram connection.",
+          });
+          // Continue with local post even if Instagram fails
+        }
+      } else {
+        toast.info("Instagram not connected", {
+          description: "Connect your Instagram account in Settings to auto-post.",
+        });
+      }
+
       toast.success("Using edited image", {
         description: editDescription,
       });
@@ -212,12 +277,13 @@ export function NewPostForm({
       console.error("Error uploading edited image:", error);
       toast.error("Failed to upload edited image. Using original instead.");
       setShowPreview(false);
-      
+
       // Fallback: soumettre avec l'image originale
       const data = form.getValues();
       await handleSubmit(data);
     } finally {
       setIsGenerating(false);
+      setIsPostingToInstagram(false);
     }
   };
 
@@ -565,32 +631,49 @@ export function NewPostForm({
                 )}
 
                 {/* Actions */}
-                <div className="flex gap-3 justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={handleClosePreview}
-                  >
-                    <X className="h-4 w-4 mr-2" />
-                    Cancel
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={handleSelectAndSubmit}
-                    disabled={isPending}
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                        Creating...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="h-4 w-4 mr-2" />
-                        Use Edited Image & Create Post
-                      </>
-                    )}
-                  </Button>
+                <div className="flex flex-col gap-3">
+                  {/* Instagram status indicator */}
+                  {instagramConnection?.connected && (
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground bg-muted/50 rounded-lg px-3 py-2">
+                      <Instagram className="h-4 w-4 text-pink-500" />
+                      <span>
+                        Will also post to Instagram as <strong>@{instagramConnection.username}</strong>
+                      </span>
+                    </div>
+                  )}
+
+                  <div className="flex gap-3 justify-end">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleClosePreview}
+                    >
+                      <X className="h-4 w-4 mr-2" />
+                      Cancel
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleSelectAndSubmit}
+                      disabled={isPending || isPostingToInstagram}
+                      className={instagramConnection?.connected ? "bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600" : ""}
+                    >
+                      {isPending || isPostingToInstagram ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {isPostingToInstagram ? "Posting to Instagram..." : "Creating..."}
+                        </>
+                      ) : (
+                        <>
+                          {instagramConnection?.connected ? (
+                            <Instagram className="h-4 w-4 mr-2" />
+                          ) : (
+                            <Send className="h-4 w-4 mr-2" />
+                          )}
+                          Use Edited Image & Create Post
+                        </>
+                      )}
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}

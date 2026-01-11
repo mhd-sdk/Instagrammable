@@ -4,8 +4,6 @@ import { and, eq } from "drizzle-orm";
 import { database } from "~/db";
 import { account } from "~/db/schema";
 import { auth } from "~/utils/auth";
-import { privateEnv } from "~/config/privateEnv";
-import { publicEnv } from "~/config/publicEnv";
 
 export const Route = createFileRoute("/api/instagram/callback")({
   server: {
@@ -26,7 +24,8 @@ export const Route = createFileRoute("/api/instagram/callback")({
         // Handle OAuth error
         if (params["error"]) {
           console.error("[Instagram OAuth] Error:", params["error"], params["error_description"]);
-          const errorRedirect = `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings?error=instagram_auth_failed`;
+          const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
+          const errorRedirect = `${baseUrl}/dashboard/settings?error=instagram_auth_failed`;
           return new Response(null, {
             status: 302,
             headers: { Location: errorRedirect },
@@ -43,7 +42,8 @@ export const Route = createFileRoute("/api/instagram/callback")({
 
           if (!session?.user) {
             console.error("[Instagram OAuth] No authenticated session found");
-            const errorRedirect = `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings?error=not_authenticated`;
+            const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
+            const errorRedirect = `${baseUrl}/dashboard/settings?error=not_authenticated`;
             return new Response(null, {
               status: 302,
               headers: { Location: errorRedirect },
@@ -54,11 +54,22 @@ export const Route = createFileRoute("/api/instagram/callback")({
           console.log("[Instagram OAuth] User authenticated:", userId);
 
           // 2. Exchange code for access token
+          // Support both VITE_ prefixed (for Vite) and non-prefixed (for production) env vars
+          const clientId = import.meta.env.VITE_INSTAGRAM_CLIENT_ID || process.env.INSTAGRAM_CLIENT_ID || "";
+          const clientSecret = import.meta.env.VITE_INSTAGRAM_CLIENT_SECRET || process.env.INSTAGRAM_CLIENT_SECRET || "";
+          const redirectUri = import.meta.env.VITE_INSTAGRAM_REDIRECT_URI || process.env.INSTAGRAM_REDIRECT_URI || "";
+
+          console.log("[Instagram OAuth] Config check:", {
+            hasClientId: !!clientId,
+            hasClientSecret: !!clientSecret,
+            redirectUri,
+          });
+
           const tokenBody = new URLSearchParams({
-            client_id: privateEnv.INSTAGRAM_CLIENT_ID,
-            client_secret: privateEnv.INSTAGRAM_CLIENT_SECRET,
+            client_id: clientId,
+            client_secret: clientSecret,
             grant_type: "authorization_code",
-            redirect_uri: privateEnv.INSTAGRAM_REDIRECT_URI,
+            redirect_uri: redirectUri,
             code: params["code"],
           });
 
@@ -78,7 +89,8 @@ export const Route = createFileRoute("/api/instagram/callback")({
 
             if (!tokenData.access_token) {
               console.error("[Instagram OAuth] No access token in response:", tokenData);
-              const errorRedirect = `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings?error=token_exchange_failed`;
+              const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
+              const errorRedirect = `${baseUrl}/dashboard/settings?error=token_exchange_failed`;
               return new Response(null, {
                 status: 302,
                 headers: { Location: errorRedirect },
@@ -91,7 +103,7 @@ export const Route = createFileRoute("/api/instagram/callback")({
 
             try {
               const longLivedResp = await fetch(
-                `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${privateEnv.INSTAGRAM_CLIENT_SECRET}&access_token=${tokenData.access_token}`
+                `https://graph.instagram.com/access_token?grant_type=ig_exchange_token&client_secret=${clientSecret}&access_token=${tokenData.access_token}`
               );
               const longLivedData = await longLivedResp.json();
 
@@ -142,14 +154,16 @@ export const Route = createFileRoute("/api/instagram/callback")({
             }
 
             // 5. Redirect to settings page with success
-            const successRedirect = `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings?instagram=connected`;
+            const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
+            const successRedirect = `${baseUrl}/dashboard/settings?instagram=connected`;
             return new Response(null, {
               status: 302,
               headers: { Location: successRedirect },
             });
           } catch (error) {
             console.error("[Instagram OAuth] Token exchange error:", error);
-            const errorRedirect = `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings?error=instagram_error`;
+            const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
+            const errorRedirect = `${baseUrl}/dashboard/settings?error=instagram_error`;
             return new Response(null, {
               status: 302,
               headers: { Location: errorRedirect },
@@ -158,9 +172,10 @@ export const Route = createFileRoute("/api/instagram/callback")({
         }
 
         // No code provided, redirect to settings
+        const baseUrl = process.env.VITE_BETTER_AUTH_URL || "http://localhost:3000";
         return new Response(null, {
           status: 302,
-          headers: { Location: `${publicEnv.BETTER_AUTH_URL || ""}/dashboard/settings` },
+          headers: { Location: `${baseUrl}/dashboard/settings` },
         });
       },
       POST: async ({ request }) => {

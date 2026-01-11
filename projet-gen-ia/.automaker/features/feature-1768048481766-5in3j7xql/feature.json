@@ -14,6 +14,9 @@
   "requirePlanApproval": false,
   "dependencies": [],
   "titleGenerating": false,
-  "status": "backlog",
-  "id": "feature-1768048481766-5in3j7xql"
+  "status": "waiting_approval",
+  "id": "feature-1768048481766-5in3j7xql",
+  "startedAt": "2026-01-11T21:21:18.134Z",
+  "updatedAt": "2026-01-11T21:27:46.477Z",
+  "justFinishedAt": "2026-01-11T21:27:46.477Z"
 }
