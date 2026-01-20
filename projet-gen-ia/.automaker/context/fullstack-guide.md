@@ -1,1 +1,0 @@
-When implementing frontend features, avoid stopping at console.log for validating data. Always check whether the backend endpoints or server-side functions are ready. If they are available, properly connect the frontend to the backend by integrating the API calls and handling responses accordingly.
