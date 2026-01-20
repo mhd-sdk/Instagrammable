@@ -45,11 +45,11 @@ export const Route = createFileRoute("/api/auth/link-social")({
         const redirect_uri = process.env.INSTAGRAM_REDIRECT_URI;
         const tokenUrl = "https://api.instagram.com/oauth/access_token";
         const params = new URLSearchParams({
-          client_id,
-          client_secret,
+          client_id: client_id || "",
+          client_secret: client_secret || "",
           grant_type: "authorization_code",
-          redirect_uri,
-          code,
+          redirect_uri: redirect_uri || "",
+          code: code || "",
         });
         let accessToken = null;
         let accountId = null;

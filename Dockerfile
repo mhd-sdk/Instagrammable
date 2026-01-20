@@ -38,11 +38,11 @@ CMD ["npm", "run", "dev:app"]
 # ============================================
 FROM base AS builder
 
-# Install all dependencies
-RUN npm install
-
-# Copy source code
+# Copy source code first
 COPY . .
+
+# Clean install to avoid npm optional dependencies bug with Rollup
+RUN rm -rf node_modules package-lock.json && npm install
 
 # Build the application
 RUN npm run build
