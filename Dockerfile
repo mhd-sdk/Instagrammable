@@ -22,7 +22,7 @@ COPY package.json package-lock.json* ./
 FROM base AS development
 
 # Install all dependencies (including devDependencies)
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -39,7 +39,7 @@ CMD ["npm", "run", "dev:app"]
 FROM base AS builder
 
 # Install all dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -63,7 +63,7 @@ COPY --from=builder /app/.output ./.output
 COPY --from=builder /app/package.json ./package.json
 
 # Install only production dependencies
-RUN npm ci --omit=dev && npm cache clean --force
+RUN npm install --omit=dev && npm cache clean --force
 
 # Set ownership
 RUN chown -R appuser:nodejs /app
