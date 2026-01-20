@@ -17,7 +17,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as DashboardSettingsRouteImport } from './routes/dashboard/settings'
 import { Route as DashboardPromptBuilderRouteImport } from './routes/dashboard/prompt-builder'
-import { Route as DashboardNewPostRouteImport } from './routes/dashboard/new-post'
 import { Route as ProfileUserIdIndexRouteImport } from './routes/profile/$userId/index'
 import { Route as ApiUploadsSplatRouteImport } from './routes/api/uploads/$'
 import { Route as ApiInstagramCallbackRouteImport } from './routes/api/instagram/callback'
@@ -64,11 +63,6 @@ const DashboardPromptBuilderRoute = DashboardPromptBuilderRouteImport.update({
   path: '/prompt-builder',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardNewPostRoute = DashboardNewPostRouteImport.update({
-  id: '/new-post',
-  path: '/new-post',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const ProfileUserIdIndexRoute = ProfileUserIdIndexRouteImport.update({
   id: '/profile/$userId/',
   path: '/profile/$userId/',
@@ -101,7 +95,6 @@ export interface FileRoutesByFullPath {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthenticated': typeof UnauthenticatedRoute
-  '/dashboard/new-post': typeof DashboardNewPostRoute
   '/dashboard/prompt-builder': typeof DashboardPromptBuilderRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -116,7 +109,6 @@ export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthenticated': typeof UnauthenticatedRoute
-  '/dashboard/new-post': typeof DashboardNewPostRoute
   '/dashboard/prompt-builder': typeof DashboardPromptBuilderRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard': typeof DashboardIndexRoute
@@ -133,7 +125,6 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/sign-up': typeof SignUpRoute
   '/unauthenticated': typeof UnauthenticatedRoute
-  '/dashboard/new-post': typeof DashboardNewPostRoute
   '/dashboard/prompt-builder': typeof DashboardPromptBuilderRoute
   '/dashboard/settings': typeof DashboardSettingsRoute
   '/dashboard/': typeof DashboardIndexRoute
@@ -151,7 +142,6 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/unauthenticated'
-    | '/dashboard/new-post'
     | '/dashboard/prompt-builder'
     | '/dashboard/settings'
     | '/dashboard/'
@@ -166,7 +156,6 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/unauthenticated'
-    | '/dashboard/new-post'
     | '/dashboard/prompt-builder'
     | '/dashboard/settings'
     | '/dashboard'
@@ -182,7 +171,6 @@ export interface FileRouteTypes {
     | '/sign-in'
     | '/sign-up'
     | '/unauthenticated'
-    | '/dashboard/new-post'
     | '/dashboard/prompt-builder'
     | '/dashboard/settings'
     | '/dashboard/'
@@ -264,13 +252,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardPromptBuilderRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/dashboard/new-post': {
-      id: '/dashboard/new-post'
-      path: '/new-post'
-      fullPath: '/dashboard/new-post'
-      preLoaderRoute: typeof DashboardNewPostRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/profile/$userId/': {
       id: '/profile/$userId/'
       path: '/profile/$userId'
@@ -310,14 +291,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface DashboardRouteChildren {
-  DashboardNewPostRoute: typeof DashboardNewPostRoute
   DashboardPromptBuilderRoute: typeof DashboardPromptBuilderRoute
   DashboardSettingsRoute: typeof DashboardSettingsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
-  DashboardNewPostRoute: DashboardNewPostRoute,
   DashboardPromptBuilderRoute: DashboardPromptBuilderRoute,
   DashboardSettingsRoute: DashboardSettingsRoute,
   DashboardIndexRoute: DashboardIndexRoute,

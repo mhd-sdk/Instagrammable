@@ -9,7 +9,7 @@
     "build": "vite build && tsc --noEmit",
     "start": "node .output/server/index.mjs",
     "db:generate": "dotenv -e .env -- drizzle-kit generate",
-    "db:migrate": "dotenv -e .env -- drizzle-kit up:pg",
+    "db:migrate": "dotenv -e .env -- drizzle-kit push",
     "db:studio": "dotenv -e .env -- drizzle-kit studio",
     "db:up": "docker compose up -d",
     "db:down": "docker compose down"
@@ -69,7 +69,7 @@
     "@types/react": "^19.2.6",
     "@types/react-dom": "^19.2.3",
     "dotenv-cli": "^11.0.0",
-    "drizzle-kit": "^0.18.1",
+    "drizzle-kit": "^0.31.4",
     "tailwindcss": "4.1.17",
     "tw-animate-css": "^1.4.0",
     "typescript": "^5.9.3",
